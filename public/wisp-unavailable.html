@@ -1,0 +1,22 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>WebSocket backend unavailable</title>
+    <style>body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;margin:2rem;background:#f8f8f8;color:#111}a{color:#0366d6}</style>
+  </head>
+  <body>
+    <h1>WebSocket backend unavailable on this host</h1>
+    <p>
+      Vercel hosts the static frontend, but it does not support long-lived WebSocket servers.
+      The proxy at <code>/wisp/</code> is not available here.
+    </p>
+    <p>
+      To run the full proxy you must host the WebSocket server (the project's <code>index.js</code>) on a provider that supports WebSockets (Fly, Render, Railway, a VPS, etc.).
+    </p>
+    <p>
+      For deployment instructions and options, see <a href="/VERCEL.md">VERCEL.md</a> in the repository.
+    </p>
+  </body>
+</html>
