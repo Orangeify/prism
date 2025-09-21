@@ -1,0 +1,39 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Prism debug</title>
+    <style>body{font-family:system-ui,Segoe UI,Roboto,Arial;margin:2rem;background:#fff;color:#111}pre{background:#f4f4f4;padding:1rem;border-radius:6px}</style>
+  </head>
+  <body>
+    <h1>Prism deployment debug</h1>
+    <p>This page runs a few fetches to check static assets and the UV service prefix.</p>
+    <div id="out"></div>
+    <script>
+      const out = document.getElementById('out');
+      function log(msg){ const p=document.createElement('pre'); p.textContent=msg; out.appendChild(p); }
+
+      async function check(url){
+        try{
+          const r = await fetch(url, { method: 'GET' });
+          log(url + ' -> ' + r.status + ' ' + r.statusText);
+          if (r.status === 200){
+            const txt = await r.text();
+            log('--- body (first 200 chars) ---\n' + txt.slice(0,200));
+          }
+        }catch(e){
+          log(url + ' -> fetch error: ' + e);
+        }
+      }
+
+      (async ()=>{
+        await check('/uv/uv.bundle.js');
+        await check('/uv/uv.sw.js');
+        await check('/uv/service/test');
+        await check('/baremux/worker.js');
+        await check('/epoxy/index.mjs');
+      })();
+    </script>
+  </body>
+</html>

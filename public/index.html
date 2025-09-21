@@ -99,15 +99,31 @@
             <input id="address" type="text" placeholder="Search..." />
             <!-- iframe where the content will be loaded -->
             <iframe id="frame" class="dnone"></iframe>
+            <div id="sw-status" style="position:fixed;left:1rem;bottom:1rem;background:#111;color:#fff;padding:.5rem 1rem;border-radius:.5rem;font-size:.85rem;opacity:.9">SW: unknown</div>
         </div>
         <script>
             async function regSW() {
                 //if the service worker doesn't exist throw an error
-                if (!navigator.serviceWorker) {
-                    throw new Error("Your browser doesn't support service workers.");
+                const statusEl = document.getElementById('sw-status');
+                if (!('serviceWorker' in navigator)) {
+                    console.warn("Service workers not supported");
+                    statusEl.textContent = 'SW: unsupported';
+                    return;
                 }
-                //register the service worker. (We just made that file!)
-                await navigator.serviceWorker.register("/sw.js");
+                try {
+                    const reg = await navigator.serviceWorker.register('/sw.js');
+                    console.log('Service worker registered', reg);
+                    statusEl.textContent = 'SW: registered';
+                    // Check if controller exists (page controlled)
+                    if (navigator.serviceWorker.controller) {
+                        statusEl.textContent = 'SW: controlling';
+                    } else {
+                        statusEl.textContent = 'SW: registered (reload to activate)';
+                    }
+                } catch (err) {
+                    console.error('Service worker registration failed:', err);
+                    statusEl.textContent = 'SW: registration failed';
+                }
             }
             regSW();
             //function for ease of use
