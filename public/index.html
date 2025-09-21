@@ -114,11 +114,20 @@
                     const reg = await navigator.serviceWorker.register('/sw.js');
                     console.log('Service worker registered', reg);
                     statusEl.textContent = 'SW: registered';
-                    // Check if controller exists (page controlled)
-                    if (navigator.serviceWorker.controller) {
-                        statusEl.textContent = 'SW: controlling';
+                    // If the SW does not yet control the page, reload once after a short delay
+                    // so the SW can activate and claim clients (this avoids a manual reload).
+                    if (!navigator.serviceWorker.controller) {
+                        statusEl.textContent = 'SW: registered (activating)';
+                        // wait briefly for activation
+                        setTimeout(() => {
+                            if (!navigator.serviceWorker.controller) {
+                                console.log('Reloading to allow service worker to take control');
+                                // perform a single reload to allow the SW to control this page
+                                try { location.reload(); } catch (e) { /* ignore */ }
+                            }
+                        }, 1000);
                     } else {
-                        statusEl.textContent = 'SW: registered (reload to activate)';
+                        statusEl.textContent = 'SW: controlling';
                     }
                 } catch (err) {
                     console.error('Service worker registration failed:', err);
