@@ -57,7 +57,7 @@
             #address {
                 width: 30rem;
                 height: 4rem;
-                background: #33001a;
+                background: #331b00;
                 color: white;
                 outline: none;
                 border: none;
@@ -80,7 +80,9 @@
                 border: none;
             }
         </style>
-        <!-- The UV bundle. It contains most of the code for ultraviolet to function properly -->
+    <!-- Optional runtime config: create public/prism.config.js to override WISP host or URL -->
+    <script src="/prism.config.js" defer></script>
+    <!-- The UV bundle. It contains most of the code for ultraviolet to function properly -->
         <script src="uv/uv.bundle.js" defer></script>
         <!-- The uv.config.js file we just made. -->
         <script src="uv/uv.config.js" defer></script>
@@ -90,9 +92,9 @@
     <body>
         <div id="main">
             <!-- Title -->
-            <h1 id="title"> Prism </h1>
+            <h1 id="title"> Orange Test </h1>
             <!-- Description --> 
-            <p id="description"> A barebones example from MotorTruck1221's guide "Creating a proxy frontend from scratch" </p>
+            <p id="description"> A first attempt at creating a proxy frontend. </p>
             <!-- Search bar -->
             <input id="address" type="text" placeholder="Search..." />
             <!-- iframe where the content will be loaded -->
@@ -112,8 +114,13 @@
             async function setTransport() {
                 //create a new bare mux connection
                 const conn = new BareMux.BareMuxConnection("/baremux/worker.js");
-                //If you are using http:// change it to ws:// or if using https:// change it to wss://, get the domain name and add "/wisp/" to the end of it
-                const wispUrl = (location.protocol === "https:" ? "wss://" : "ws://") + location.host + "/wisp/";
+                //Support optional runtime config via window.__PRISM__ (see public/prism.config.js)
+                const prismCfg = window.__PRISM__ || {};
+                //If a full WISP URL is provided, use it. Otherwise build from host (override via WISP_HOST) and protocol.
+                const defaultHost = location.host;
+                const host = prismCfg.WISP_HOST || defaultHost;
+                const protocol = (location.protocol === "https:" ? "wss://" : "ws://");
+                const wispUrl = prismCfg.WISP_URL || (protocol + host + "/wisp/");
                 //actually set the transport!!
                 await conn.setTransport("/epoxy/index.mjs", [{ wisp: wispUrl /* We just set this url! */ }]);
             }
