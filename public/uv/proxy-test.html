@@ -1,0 +1,42 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>UV Proxy Test</title>
+    <style>body{font-family:system-ui,Segoe UI,Roboto,Arial;margin:1rem}label,input{display:block;margin:8px 0}pre{background:#f4f4f4;padding:1rem;border-radius:6px}</style>
+  </head>
+  <body>
+    <h1>Ultraviolet proxy tester</h1>
+    <p>Enter a full URL (including protocol) to test the UV proxy. This page will encode the URL and request <code>__uv$config.prefix + encode(url)</code>.</p>
+    <label>URL
+      <input id="url" value="https://example.com/" style="width:100%" />
+    </label>
+    <button id="run">Fetch via UV proxy</button>
+    <div id="out"></div>
+    <script>
+      const out = document.getElementById('out');
+      function log(t){ const p=document.createElement('pre'); p.textContent = t; out.appendChild(p); }
+      document.getElementById('run').addEventListener('click', async ()=>{
+        out.innerHTML = '';
+        if (typeof __uv$config === 'undefined' || typeof __uv$config.encodeUrl !== 'function'){
+          log('Error: __uv$config or encodeUrl not available. Ensure UV client and SW are loaded.');
+          return;
+        }
+        const url = document.getElementById('url').value.trim();
+        if (!url) return log('Enter a URL');
+        try {
+          const enc = __uv$config.encodeUrl(url);
+          const prox = __uv$config.prefix + enc;
+          log('Proxied request: ' + prox);
+          const r = await fetch(prox, { method: 'GET' });
+          log('Status: ' + r.status + ' ' + r.statusText);
+          const txt = await r.text();
+          log('--- body (first 2000 chars) ---\n' + txt.slice(0,2000));
+        } catch (err) {
+          log('Fetch error: ' + err);
+        }
+      });
+    </script>
+  </body>
+</html>
