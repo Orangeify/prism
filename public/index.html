@@ -82,10 +82,10 @@
         </style>
     <!-- Optional runtime config: create public/prism.config.js to override WISP host or URL -->
     <script src="/prism.config.js" defer></script>
+    <!-- Load UV config before the bundle so __uv$config is available when UV initialises -->
+    <script src="/uv/uv.config.js" defer></script>
     <!-- The UV bundle. It contains most of the code for ultraviolet to function properly -->
-        <script src="uv/uv.bundle.js" defer></script>
-        <!-- The uv.config.js file we just made. -->
-        <script src="uv/uv.config.js" defer></script>
+    <script src="/uv/uv.bundle.js" defer></script>
         <!-- BareMux content -->
         <script src="baremux/index.js" defer></script>
     </head>
